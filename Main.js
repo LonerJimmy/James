@@ -18,7 +18,6 @@ import {
 
 import TabNavigator from 'react-native-tab-navigator';
 import Home from './Home';
-import Note from './NoteListView';
 
 var TITLE_NEWS='新闻';
 var TITLE_NOTE='日记'
@@ -64,7 +63,7 @@ class Main extends Component {
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}>
-                        <Note></Note>
+                        <Text>{'正在加载...'}</Text>
                     </View>
                 </TabNavigator.Item>
                 <TabNavigator.Item
