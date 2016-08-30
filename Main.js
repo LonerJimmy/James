@@ -17,10 +17,10 @@ import {
 } from 'react-native';
 
 import TabNavigator from 'react-native-tab-navigator';
-import Clock from './clock';
 import Home from './Home';
+import Note from './NoteListView';
 
-var TITLE_CLOCK='新闻';
+var TITLE_NEWS='新闻';
 var TITLE_NOTE='日记'
 var TITLE_MORE='更多'
 
@@ -29,7 +29,7 @@ class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedTab: TITLE_CLOCK,
+            selectedTab: TITLE_NEWS,
         };
     }
 
@@ -37,15 +37,15 @@ class Main extends Component {
         return (
             <TabNavigator>
                 <TabNavigator.Item
-                    title={TITLE_CLOCK}
-                    selected={this.state.selectedTab === TITLE_CLOCK}
+                    title={TITLE_NEWS}
+                    selected={this.state.selectedTab === TITLE_NEWS}
                     selectedTitleStyle={styles.selectedTextStyle}
                     titleStyle={styles.textStyle}
                     renderIcon={() => <Image source={require("./imgs/ic_alarm_clock_unselect.png")}
                                              style={styles.iconStyle}/>}
                     renderSelectedIcon={() => <Image source={require("./imgs/ic_alarm_clock_select.png")}
                                                      style={styles.iconStyle}/>}
-                    onPress={() => this.setState({selectedTab: TITLE_CLOCK})}>
+                    onPress={() => this.setState({selectedTab: TITLE_NEWS})}>
                     <Home
                         navigator={this.props.navigator}
                         route={this.props.route}/>
@@ -64,7 +64,7 @@ class Main extends Component {
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}>
-                        <Text>{'正在加载...'}</Text>
+                        <Note></Note>
                     </View>
                 </TabNavigator.Item>
                 <TabNavigator.Item

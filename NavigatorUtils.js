@@ -1,4 +1,5 @@
 import Main from './Main';
+import NewsDetail from './NewsDetail';
 
 const PAGE_MAIN = 'main';
 const PAGE_NEWSDETAIL = 'newsdetail';
@@ -12,7 +13,7 @@ export const getMainNavigatorRoute = () => {
 
 export const getNewsDetailNavigatorRoute = () => {
     return {
-        component:NewsDetailScreen,
+        component:NewsDetail,
         name:PAGE_NEWSDETAIL,
     };
 }
