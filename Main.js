@@ -63,7 +63,8 @@ class Main extends Component {
                         flex: 1,
                         alignItems: 'center',
                         justifyContent: 'center',
-                    }}></NoteListView>
+                    }} navigator={this.props.navigator}
+                    ></NoteListView>
                 </TabNavigator.Item>
                 <TabNavigator.Item
                     title={TITLE_MORE}

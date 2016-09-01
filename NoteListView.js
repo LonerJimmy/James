@@ -17,6 +17,9 @@ import {
     deleteAllRealmData
 } from './RealmUtils';
 import NoteItem from './NoteItem'
+import {
+    getNotesDetailNavigatorRoute
+} from './NavigatorUtils';
 
 class NoteListView extends Component {
 
@@ -47,8 +50,10 @@ class NoteListView extends Component {
         );
     }
 
-    toNotesDetail(note) {
-
+    toNotesDetail(n) {
+        var route = getNotesDetailNavigatorRoute();
+        route.detail = n;
+        this.props.navigator.push(route);
     }
 
     makeItems() {
