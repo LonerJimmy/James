@@ -5,98 +5,116 @@ import {
     TouchableHighlight,
     ToastAndroid,
     Text,
-    View
+    View,
+    ListView,
+    ScrollView,
+    TouchableOpacity
 } from 'react-native';
-const Realm = require('realm');
 
-class CustomButton extends Component {
-    render() {
-        return (
-            <TouchableHighlight
-                style={styles.button}
-                underlayColor="#a5a5a5"
-                onPress={this.props.onPress}>
-                <Text style={styles.buttonText}>{this.props.text}</Text>
-            </TouchableHighlight>
-        );
-    }
-}
+import {
+    addRealmData,
+    fetchAllRealmData,
+    deleteAllRealmData
+} from './RealmUtils';
+import NoteItem from './NoteItem'
 
 class NoteListView extends Component {
-    render() {
-        const CarSchema = {
-            name: 'Car',
-            primaryKey: 'id',
-            properties: {
-                id: 'int',
-                name: 'string',
-                model: 'string',
-                drive: 'string',
-            }
-        };
-        //进行初始化realm
-        let realm = new Realm({schema: [CarSchema]});
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            notesList: null,
+            dataSource: new ListView.DataSource({
+                rowHasChanged: (row1, row2) => row1 !== row2,
+                sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
+            }),
+        }
+        this.renderRow = this.renderRow.bind(this);
+    }
+
+    componentDidMount() {
+        // addRealmData(1, '帮助', '请打开帮助,阅读以下', '2016-9-1', 1)
+        this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(fetchAllRealmData()),
+        });
+    }
+
+    renderRow(note) {
         return (
-            <View style={{marginTop: 20}}>
-                <Text style={styles.welcome}>
-                    Realm基础使用实例-增删改查
-                </Text>
-                <CustomButton text="表新增"
-                              onPress={()=>
-                                  realm.write(()=> {
-                                      realm.create('Car', {id: 1, name: 'Benz', model: 'C350', drive: '张三'});
-                                      realm.create('Car', {id: 2, name: 'Benz', model: 'E250', drive: '李四'});
-                                      realm.create('Car', {id: 3, name: 'BMW', model: '740Li', drive: '王五'});
-                                      realm.create('Car', {id: 4, name: 'Mazda', model: 'CX-5', drive: '赵六'});
-                                      realm.create('Car', {id: 5, name: '大众', model: '辉腾', drive: '张飞'});
-                                      ToastAndroid.show('添加数据完成...', ToastAndroid.SHORT);
-                                  })
-                              }
-                />
-                <CustomButton text="表修改"
-                              onPress={()=> {
-                                  realm.write(()=> {
-                                      //进行更新id=1的数据,drive修改成赵云
-                                      realm.create('Car', {id: 1, drive: '赵云'}, true);
-                                      ToastAndroid.show('表修改完成...', ToastAndroid.SHORT);
-                                  })
-                              }}
-                />
-                <CustomButton text="表数据删除-删除id=3的数据"
-                              onPress={()=> {
-                                  realm.write(()=> {
-                                      let cars = realm.objects('Car');
-                                      let car = cars.filtered('id==3');
-                                      realm.delete(car);
-                                  })
-                              }}
-                />
-                <CustomButton text="查询所有数据"
-                              onPress={()=> {
-                                  let cars = realm.objects('Car');
-                                  ToastAndroid.show('Car的数据为:' + cars.length + "辆", ToastAndroid.SHORT);
-                              }}
-                />
-                <CustomButton text="根据id=1进行查询数据"
-                              onPress={()=> {
-                                  let cars = realm.objects('Car');
-                                  let car = cars.filtered('id==1');
-                                  if (car) {
-                                      ToastAndroid.show('Car的数据为:编号=' + car[0].id + ',name=' + car[0].name + ',model=' + car[0].model + ',drive=' + car[0].drive, ToastAndroid.SHORT);
-                                  }
-                              }}
-                />
-                <CustomButton text="模糊查询name已M开头"
-                              onPress={()=> {
-                                  let cars = realm.objects('Car');
-                                  let car = cars.filtered('name BEGINSWITH "M" ');
-                                  if (car) {
-                                      ToastAndroid.show('Car的数据为:编号=' + car[0].id + ',name=' + car[0].name + ',model=' + car[0].model + ',drive=' + car[0].drive, ToastAndroid.SHORT);
-                                  }
-                              }}
-                />
-            </View>
+            <NoteItem
+                note={note}
+                onSelect={() => this.toNotesDetail(note)}/>
         );
+    }
+
+    toNotesDetail(note) {
+
+    }
+
+    makeItems() {
+        if (this.state.dataSource._cachedRowCount === 0) {
+            return (<View>
+                <View
+                    style={styles.head}
+                    horizontal={true}>
+                    <TouchableOpacity style={styles.itemDelete}
+                                      onPress={() => this.deleteAll()}>
+                        <Text>清除</Text>
+                    </TouchableOpacity>
+                    <View style={styles.itemMid}>
+                        <Text >笔记</Text>
+                    </View>
+                    <TouchableOpacity style={styles.itemAdd}
+                                      onPress={() => this.addOne()}>
+                        <Text>添加</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.empty}>
+                    <Text>无日记。。。</Text>
+                </View>
+            </View>);
+        } else {
+            return (<View>
+                <View
+                    style={styles.head}
+                    horizontal={true}>
+                    <TouchableOpacity style={styles.itemDelete}
+                                      onPress={() => this.deleteAll()}>
+                        <Text>清除</Text>
+                    </TouchableOpacity>
+                    <View style={styles.itemMid}>
+                        <Text >笔记</Text>
+                    </View>
+                    <TouchableOpacity style={styles.itemAdd}
+                                      onPress={() => this.addOne()}>
+                        <Text>添加</Text>
+                    </TouchableOpacity>
+                </View>
+                <ListView
+                    style={styles.lv}
+                    dataSource={this.state.dataSource}
+                    renderRow={this.renderRow}
+                />
+            </View>);
+        }
+    }
+
+    addOne() {
+        addRealmData(1, '帮助', '请打开帮助,阅读以下', '2016-9-1', 1)
+        this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(fetchAllRealmData()),
+        });
+    }
+
+    deleteAll() {
+        deleteAllRealmData();
+        this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(fetchAllRealmData()),
+        });
+    }
+
+    render() {
+        return (this.makeItems());
     }
 }
 
@@ -106,6 +124,47 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
+    },
+    lv: {
+        flex: 1,
+    },
+    empty: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+    },
+    view: {
+        flex: 10,
+    },
+    head: {
+        height: 50,
+        flexDirection: 'row',
+        padding: 10,
+        marginLeft: 10,
+        marginRight: 10,
+    },
+    itemDelete: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: '#dddddd',
+    },
+    itemMid: {
+        flex: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+    },
+    itemAdd: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: '#dddddd',
     },
     welcome: {
         fontSize: 20,

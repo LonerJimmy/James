@@ -20,9 +20,9 @@ import TabNavigator from 'react-native-tab-navigator';
 import Home from './Home';
 import NoteListView from './NoteListView';
 
-var TITLE_NEWS='新闻';
-var TITLE_NOTE='日记'
-var TITLE_MORE='更多'
+var TITLE_NEWS = '新闻';
+var TITLE_NOTE = '日记'
+var TITLE_MORE = '更多'
 
 
 class Main extends Component {
@@ -59,13 +59,11 @@ class Main extends Component {
                     renderSelectedIcon={() => <Image source={require("./imgs/ic_time_select.png")}
                                                      style={styles.iconStyle}/>}
                     onPress={() => this.setState({selectedTab: TITLE_NOTE})}>
-                    <View style={{
+                    <NoteListView style={{
                         flex: 1,
                         alignItems: 'center',
                         justifyContent: 'center',
-                    }}>
-                        <NoteListView></NoteListView>
-                    </View>
+                    }}></NoteListView>
                 </TabNavigator.Item>
                 <TabNavigator.Item
                     title={TITLE_MORE}
