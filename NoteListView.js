@@ -8,7 +8,8 @@ import {
     View,
     ListView,
     ScrollView,
-    TouchableOpacity
+    TouchableOpacity,
+    DeviceEventEmitter
 } from 'react-native';
 
 import {
@@ -18,7 +19,8 @@ import {
 } from './RealmUtils';
 import NoteItem from './NoteItem'
 import {
-    getNotesDetailNavigatorRoute
+    getNotesDetailNavigatorRoute,
+    getNotesEditNavigatorRoute
 } from './NavigatorUtils';
 
 class NoteListView extends Component {
@@ -26,21 +28,33 @@ class NoteListView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            notesList: null,
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => row1 !== row2,
                 sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
             }),
         }
         this.renderRow = this.renderRow.bind(this);
+        this.refreshNotes = this.refreshNotes.bind(this);
     }
 
     componentDidMount() {
         // addRealmData(1, '帮助', '请打开帮助,阅读以下', '2016-9-1', 1)
+
         this.setState({
             dataSource: this.state.dataSource.cloneWithRows(fetchAllRealmData()),
         });
+        this.subscription = DeviceEventEmitter.addListener('changeNote', this.refreshNotes);
     }
+
+    refreshNotes(data) {
+        this.state = {
+            dataSource: this.state.dataSource.cloneWithRows(fetchAllRealmData()),
+        }
+    }
+
+    componentWillUnmount() {
+        this.subscription.remove();
+    };
 
     renderRow(note) {
         return (
@@ -48,12 +62,6 @@ class NoteListView extends Component {
                 note={note}
                 onSelect={() => this.toNotesDetail(note)}/>
         );
-    }
-
-    toNotesDetail(n) {
-        var route = getNotesDetailNavigatorRoute();
-        route.detail = n;
-        this.props.navigator.push(route);
     }
 
     makeItems() {
@@ -104,11 +112,21 @@ class NoteListView extends Component {
         }
     }
 
+    toNotesDetail(n) {
+        var route = getNotesDetailNavigatorRoute();
+        route.detail = n;
+        this.props.navigator.push(route);
+    }
+
     addOne() {
-        addRealmData(1, '帮助', '请打开帮助,阅读以下', '2016-9-1', 1)
-        this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(fetchAllRealmData()),
-        });
+        var route = getNotesEditNavigatorRoute();
+        this.props.navigator.push(route);
+        // addRealmData(1, '帮助', '请打开帮助,阅读以下', '2016-9-1', 1)
+        // this.setState({
+        //     dataSource: this.state.dataSource.cloneWithRows(fetchAllRealmData()),
+        //     size: this.dataSource._cachedRowCount,
+        // })
+        // ;
     }
 
     deleteAll() {

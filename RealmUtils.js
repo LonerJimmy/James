@@ -7,8 +7,8 @@ const Realm = require('realm');
 const RealmName = 'Note';
 const NoteSchema = {
     name: RealmName,
+    primaryKey: 'time',
     properties: {
-        id: 'int',
         title: 'string',
         content: 'string',
         time: 'string',
@@ -20,17 +20,28 @@ export const initRealmData = () => {
 
 }
 
-export const addRealmData = (id, title, content, time, type) => {
+export const addRealmData = (title, content, time, type) => {
     let realm = new Realm({schema: [NoteSchema]});
     return realm.write(()=> {
         realm.create(RealmName, {
-            id: id,
             title: title,
             content: content,
             time: time,
             type: type
         });
     })
+}
+
+export const updateRealmData = (title, content, time, type) => {
+    let realm = new Realm({schema: [NoteSchema]});
+    return realm.write(()=> {
+        realm.create(RealmName, {
+            title: title,
+            content: content,
+            time: time,
+            type: type
+        },true);
+    });
 }
 
 export const deleteAllRealmData = () => {
@@ -41,13 +52,17 @@ export const deleteAllRealmData = () => {
     })
 }
 
-export const deleteOneRealmData = (note) => {
+export const deleteOneRealmData = (title, content, time, type) => {
     let realm = new Realm({schema: [NoteSchema]});
     realm.write(()=> {
-        let book = realm.create(note);
+        let book = realm.create(RealmName, {
+            title: title,
+            content: content,
+            time:time,
+            type: type
+        },true);
         // 删除该书本
         realm.delete(book);
-
     })
 }
 
