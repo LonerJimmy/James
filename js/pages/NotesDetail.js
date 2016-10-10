@@ -11,7 +11,7 @@ import {
     DeviceEventEmitter
 } from 'react-native';
 import {updateRealmData,
-    deleteOneRealmData} from './RealmUtils';
+    deleteOneRealmData} from '../utils/RealmUtils';
 
 class NewsDetail extends Component {
     constructor(props) {

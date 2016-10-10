@@ -16,10 +16,6 @@ const NoteSchema = {
     }
 };
 
-export const initRealmData = () => {
-
-}
-
 export const addRealmData = (title, content, time, type) => {
     let realm = new Realm({schema: [NoteSchema]});
     return realm.write(()=> {

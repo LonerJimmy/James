@@ -41,9 +41,9 @@ class Main extends Component {
                     selected={this.state.selectedTab === TITLE_NEWS}
                     selectedTitleStyle={styles.selectedTextStyle}
                     titleStyle={styles.textStyle}
-                    renderIcon={() => <Image source={require("./imgs/ic_alarm_clock_unselect.png")}
+                    renderIcon={() => <Image source={require("../imgs/ic_alarm_clock_unselect.png")}
                                              style={styles.iconStyle}/>}
-                    renderSelectedIcon={() => <Image source={require("./imgs/ic_alarm_clock_select.png")}
+                    renderSelectedIcon={() => <Image source={require("../imgs/ic_alarm_clock_select.png")}
                                                      style={styles.iconStyle}/>}
                     onPress={() => this.setState({selectedTab: TITLE_NEWS})}>
                     <Home
@@ -55,8 +55,8 @@ class Main extends Component {
                     selected={this.state.selectedTab === TITLE_NOTE}
                     selectedTitleStyle={styles.selectedTextStyle}
                     titleStyle={styles.textStyle}
-                    renderIcon={() => <Image source={require("./imgs/ic_time_unselect.png")} style={styles.iconStyle}/>}
-                    renderSelectedIcon={() => <Image source={require("./imgs/ic_time_select.png")}
+                    renderIcon={() => <Image source={require("../imgs/ic_time_unselect.png")} style={styles.iconStyle}/>}
+                    renderSelectedIcon={() => <Image source={require("../imgs/ic_time_select.png")}
                                                      style={styles.iconStyle}/>}
                     onPress={() => this.setState({selectedTab: TITLE_NOTE})}>
                     <NoteListView style={{
@@ -71,8 +71,8 @@ class Main extends Component {
                     selected={this.state.selectedTab === TITLE_MORE}
                     selectedTitleStyle={styles.selectedTextStyle}
                     titleStyle={styles.textStyle}
-                    renderIcon={() => <Image source={require("./imgs/ic_more_unselect.png")} style={styles.iconStyle}/>}
-                    renderSelectedIcon={() => <Image source={require("./imgs/ic_more_select.png")}
+                    renderIcon={() => <Image source={require("../imgs/ic_more_unselect.png")} style={styles.iconStyle}/>}
+                    renderSelectedIcon={() => <Image source={require("../imgs/ic_more_select.png")}
                                                      style={styles.iconStyle}/>}
                     onPress={() => this.setState({selectedTab: TITLE_MORE})}>
                     <View>

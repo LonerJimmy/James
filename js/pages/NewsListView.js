@@ -11,34 +11,31 @@ import {
     TouchableOpacity,
 } from 'react-native';
 
-import {
-    fetchNews,
-} from './DataSourceUtils';
+import fetchNewsList from '../actions/news';
+import {connect} from 'react-redux';
 
 import {
     getNewsDetailNavigatorRoute
-} from './NavigatorUtils';
+} from '../utils/NavigatorUtils';
 
-import NewsItem from './NewsItem';
+import NewsItem from '../components/NewsItem';
 import ViewPager from 'react-native-viewpager';
 
+var dataState = {
+    dataSource: new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+        sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
+    }),
+    headerDataSource: new ViewPager.DataSource({
+        pageHasChanged: (p1, p2) => p1 !== p2,
+    })
+};
 
 class NewsListView extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            lastID: null,
-            newsList: null,
-            isRefreshing:false,
-            dataSource: new ListView.DataSource({
-                rowHasChanged: (row1, row2) => row1 !== row2,
-                sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
-            }),
-            headerDataSource: new ViewPager.DataSource({
-                pageHasChanged: (p1, p2) => p1 !== p2,
-            })
-        }
+
         this.fetchNewsList = this.fetchNewsList.bind(this);
         this.onEndReached = this.onEndReached.bind(this);
         this.renderHeader = this.renderHeader.bind(this);
@@ -50,10 +47,6 @@ class NewsListView extends Component {
         this.fetchNewsList(this.props.theme);
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.fetchNewsList(nextProps.theme);
-    }
-
     onEndReached() {
         this.fetchNewsList(this.props.theme);
     }
@@ -63,12 +56,13 @@ class NewsListView extends Component {
         route.story = story;
         this.props.navigator.push(route);
     }
-    renderHeader() {
-        if (this.props.theme.id === 0 && this.state.headerDataSource.getPageCount() > 0) {
+
+    renderHeader(headerDataSource) {
+        if (headerDataSource && headerDataSource.getPageCount() > 0) {
             return (
                 <View style={{flex: 1, height: 200}}>
                     <ViewPager
-                        dataSource={this.state.headerDataSource}
+                        dataSource={headerDataSource}
                         renderPage={this.renderPage}
                         isLoop={true}
                         autoPlay={true}/>
@@ -105,76 +99,47 @@ class NewsListView extends Component {
 
     fetchNewsList(theme) {
         var themeId = theme ? theme.id : 0;
-
-        fetchNews(themeId, this.state.lastID)
-            .then((response) => {
-                var newLastID;
-                var newNewsList = this.state.newsList;
-                var newheaderDataSource = this.state.headerDataSource;
-                if (themeId == 0) {
-                    newLastID = response.date;
-                } else {
-                    var length = response.stories.length;
-                    if (length > 0) {
-                        newLastID = response.stories[length - 1].id;
-                    }
-                }
-
-                if (this.state.lastID) {
-                    newNewsList = newNewsList.concat(response.stories);
-                } else {
-                    newNewsList = response.stories;
-                    if (response.top_stories && response.top_stories.length > 0) {
-                        newheaderDataSource = newheaderDataSource.cloneWithPages(response.top_stories.slice());
-                    }
-                }
-                this.setState({
-                    lastID: newLastID,
-                    newsList: newNewsList,
-                    isRefreshing:false,
-                    dataSource: this.state.dataSource.cloneWithRows(newNewsList),
-                    headerDataSource: newheaderDataSource,
-                });
-
-            })
-            .catch((error) => {
-                console.error(error);
-            })
-            .done();
+        const {news, dispatch} = this.props;
+        dispatch(fetchNewsList(themeId, news.lastId[themeId]));
     }
-
-    onRefresh() {
-        this.setState({
-                isRefreshing:true,                 
-                });
-        this.fetchNewsList(this.props.theme);
-    }
+    //
+    // onRefresh() {
+    //     this.setState({
+    //             isRefreshing:true,
+    //             });
+    //     this.fetchNewsList(this.props.theme);
+    // }
 
     render() {
-        var content = this.state.dataSource.getRowCount() === 0 ?
+        const {news, theme} = this.props;
+        var dataSource = news.news[themeId] ? dataState.dataSource.cloneWithRows(news.news[themeId]) : dataState.dataSource;
+        const themeId = theme.id;
+        var headerDataSource = news.headNews[themeId] ? dataState.headerDataSource.cloneWithPages(news.headNews[themeId]) : dataState.headerDataSource;
+
+        var content = !news.news[themeId] || news.news[themeId].length === 0 ?
             <View style={styles.centerEmpty}>
                 <Text>{'正在加载...'}</Text>
             </View> :
             <ListView
                 ref="listview"
                 style={styles.listview}
-                dataSource={this.state.dataSource}
+                dataSource={dataSource}
                 renderRow={this.renderRow}
                 onEndReached={this.onEndReached}
                 automaticallyAdjustContentInsets={false}
                 keyboardDismissMode="on-drag"
                 keyboardShouldPersistTaps={true}
                 showsVerticalScrollIndicator={false}
-                renderHeader={this.renderHeader}
-                refreshControl={
-                <RefreshControl
-                    style={{ backgroundColor: 'transparent' }}
-                    refreshing={this.state.isRefreshing}
-                    onRefresh={() => this.onRefresh()}
-                    title="Loading..."
-                    colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}
-                />
-            }
+                renderHeader={() =>this.renderHeader(headerDataSource)}
+                //refreshControl={
+                //<RefreshControl
+                //  style={{ backgroundColor: 'transparent' }}
+                //  refreshing={this.state.isRefreshing}
+                //  onRefresh={() => this.onRefresh()}
+                //  title="Loading..."
+                //  colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}
+                ///>
+                //}
             />;
         return content;
     }
@@ -208,4 +173,11 @@ var styles = StyleSheet.create({
     },
 });
 
-export default NewsListView;
+function mapStateToProps(state) {
+    const {news} = state;
+    return {
+        news
+    };
+}
+
+export default connect(mapStateToProps)(NewsListView);

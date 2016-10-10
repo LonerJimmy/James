@@ -16,12 +16,12 @@ import {
     addRealmData,
     fetchAllRealmData,
     deleteAllRealmData
-} from './RealmUtils';
-import NoteItem from './NoteItem'
+} from '../utils/RealmUtils';
+import NoteItem from '../components/NoteItem'
 import {
     getNotesDetailNavigatorRoute,
     getNotesEditNavigatorRoute
-} from './NavigatorUtils';
+} from '../utils/NavigatorUtils';
 
 class NoteListView extends Component {
 

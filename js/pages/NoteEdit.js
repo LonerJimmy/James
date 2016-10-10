@@ -14,7 +14,7 @@ import {
     addRealmData,
     fetchAllRealmData,
     deleteAllRealmData
-} from './RealmUtils';
+} from '../utils/RealmUtils';
 
 class NoteEdit extends Component {
     constructor(props) {
