@@ -9,6 +9,8 @@ export const RECEIVE_THEME_LIST = 'RECEIVE_THEME_LIST';
 
 //news
 export const RECEIVE_NEWS_LIST = "RECEIVE_NEWS_LIST";
+export const FETCH_NEWS_LIST = "FETCH_NEWS_LIST";
+// export const REFRESH_NEWS_LIST = "REFRESH_NEWS_LIST";
 
 //newsDetail
 export const FETCH_NEWS_DETAIL = "FETCH_NEWS_DETAIL";

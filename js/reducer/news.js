@@ -5,6 +5,8 @@
 import * as types from '../constants/actionTypes';
 
 const initState = {
+    loading: false,
+    refresh: false,
     lastId: {},
     news: {},
     headNews: {},
@@ -14,6 +16,16 @@ export default function news(state = initState, action) {
     switch (action.type) {
         case types.RECEIVE_NEWS_LIST:
             return Object.assign({}, state, {
+                loading: false,
+                refresh:false,
+                lastId: setLastId(state, action),
+                news: addNews(state, action),
+                headNews: addHeadNews(state, action),
+            });
+        case types.FETCH_NEWS_LIST:
+            return Object.assign({}, state, {
+                loading: true,
+                refresh:false,
                 lastId: setLastId(state, action),
                 news: addNews(state, action),
                 headNews: addHeadNews(state, action),

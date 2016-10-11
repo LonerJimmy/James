@@ -74,7 +74,7 @@ class NewsListView extends Component {
 
     renderPage(story) {
         return (
-            <TouchableOpacity style={{flex: 1}} onPress = {() => this.toNewsDetail(story)}>
+            <TouchableOpacity style={{flex: 1}} onPress={() => this.toNewsDetail(story)}>
                 <Image
                     source={{uri: story.image}}
                     style={styles.headerItem}>
@@ -93,7 +93,7 @@ class NewsListView extends Component {
         return (
             <NewsItem
                 story={story}
-                onSelect = {() => this.toNewsDetail(story)}/>
+                onSelect={() => this.toNewsDetail(story)}/>
         );
     }
 
@@ -102,13 +102,10 @@ class NewsListView extends Component {
         const {news, dispatch} = this.props;
         dispatch(fetchNewsList(themeId, news.lastId[themeId]));
     }
-    //
-    // onRefresh() {
-    //     this.setState({
-    //             isRefreshing:true,
-    //             });
-    //     this.fetchNewsList(this.props.theme);
-    // }
+
+    onRefresh() {
+        this.fetchNewsList(this.props.theme);
+    }
 
     render() {
         const {news, theme} = this.props;
@@ -116,7 +113,7 @@ class NewsListView extends Component {
         const themeId = theme.id;
         var headerDataSource = news.headNews[themeId] ? dataState.headerDataSource.cloneWithPages(news.headNews[themeId]) : dataState.headerDataSource;
 
-        var content = !news.news[themeId] || news.news[themeId].length === 0 ?
+        var content = news.refresh ?
             <View style={styles.centerEmpty}>
                 <Text>{'正在加载...'}</Text>
             </View> :
@@ -131,15 +128,15 @@ class NewsListView extends Component {
                 keyboardShouldPersistTaps={true}
                 showsVerticalScrollIndicator={false}
                 renderHeader={() =>this.renderHeader(headerDataSource)}
-                //refreshControl={
-                //<RefreshControl
-                //  style={{ backgroundColor: 'transparent' }}
-                //  refreshing={this.state.isRefreshing}
-                //  onRefresh={() => this.onRefresh()}
-                //  title="Loading..."
-                //  colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}
-                ///>
-                //}
+                refreshControl={
+                    <RefreshControl
+                        style={{backgroundColor: 'transparent'}}
+                        refreshing={news.loading}
+                        onRefresh={() => this.onRefresh()}
+                        title="Loading..."
+                        colors={['#ffaa66cc', '#ff00ddff', '#ffffbb33', '#ffff4444']}
+                    />
+                }
             />;
         return content;
     }

@@ -6,7 +6,7 @@
 import * as types from '../constants/actionTypes';
 import {API_HISTORY_URL, API_NEWS_URL, API_THEME_URL} from '../constants/urls';
 
-export default function fetchNewsList(themeId, lastId) {
+export default function fetchNewsList(refresh, themeId, lastId) {
     return dispatch => {
         //首页
         var url;
@@ -23,6 +23,7 @@ export default function fetchNewsList(themeId, lastId) {
                 url = API_THEME_URL + themeId;
             }
         }
+        dispatch(fetchNews());
         fetch(url)
             .then((response) => response.json())
             .then((response) => {
@@ -43,6 +44,12 @@ export default function fetchNewsList(themeId, lastId) {
             })
             .done();
     }
+}
+
+function fetchNews() {
+    return {
+        type: types.FETCH_NEWS_LIST,
+    };
 }
 
 function endFetch(themeId, lastId, news, headNews) {
