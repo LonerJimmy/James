@@ -113,7 +113,7 @@ class NewsListView extends Component {
         const themeId = theme.id;
         var headerDataSource = news.headNews[themeId] ? dataState.headerDataSource.cloneWithPages(news.headNews[themeId]) : dataState.headerDataSource;
 
-        var content = news.refresh ?
+        var content = !news.news[themeId] || news.news[themeId].length === 0 ?
             <View style={styles.centerEmpty}>
                 <Text>{'正在加载...'}</Text>
             </View> :
